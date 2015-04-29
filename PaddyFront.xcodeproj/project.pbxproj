@@ -413,6 +413,7 @@
 				9A228F0D1AF0D74700E72AD5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		9A228F0E1AF0D74700E72AD5 /* Build configuration list for PBXNativeTarget "PaddyFrontTests" */ = {
 			isa = XCConfigurationList;
@@ -421,6 +422,7 @@
 				9A228F101AF0D74700E72AD5 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
