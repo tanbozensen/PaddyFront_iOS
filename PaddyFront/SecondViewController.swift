@@ -127,31 +127,24 @@ class SecondViewController: UIViewController , CLLocationManagerDelegate , UIPic
 
         requestTextView.text = "\(requestStr)"
 
+        // POST
         // 通信用のConfigを生成.
         let myConfig:NSURLSessionConfiguration = NSURLSessionConfiguration.backgroundSessionConfigurationWithIdentifier("backgroundTask")
-        
         // Sessionを生成.
         var mySession:NSURLSession = NSURLSession(configuration: myConfig, delegate: self, delegateQueue: nil)
-        
         // 通信先のURLを生成.
         let myUrl:NSURL = NSURL(string: "http://tanbozensen.herokuapp.com/api/tanbos/")!
-        
         // POST用のリクエストを生成.
         let myRequest:NSMutableURLRequest = NSMutableURLRequest(URL: myUrl)
-        
         // POSTのメソッドを指定.
         myRequest.HTTPMethod = "POST"
-        
         // Httpヘッダのcontenttypeはapplication/jsonに
         myRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
-        
         // リクエストにセット.
         let myData:NSData = requestStr.dataUsingEncoding(NSUTF8StringEncoding)!
         myRequest.HTTPBody = myData
-        
         // タスクの生成.
         let myTask:NSURLSessionDataTask = mySession.dataTaskWithRequest(myRequest)
-        
         // タスクの実行.
         myTask.resume()
     }
