@@ -28,7 +28,7 @@ class SecondViewController: UIViewController , CLLocationManagerDelegate , UIPic
     @IBOutlet weak var datePicker: UIDatePicker!
     
     @IBOutlet weak var riceTypePicker: UIPickerView!
-    let array = ["コシヒカリ", "ヒノヒカリ", "ひとめぼれ", "あきたこまち", "キヌヒカリ" , "はえぬき" , "きらら３９７" , "つがるロマン" , "ななつぼし" , "ササニシキ" , "その他" ]
+    let array = ["選択なし","コシヒカリ", "ヒノヒカリ", "ひとめぼれ", "あきたこまち", "キヌヒカリ" , "はえぬき" , "きらら３９７" , "つがるロマン" , "ななつぼし" , "ササニシキ" , "その他" ]
     
     override func viewDidLoad() {
         super.viewDidLoad()
