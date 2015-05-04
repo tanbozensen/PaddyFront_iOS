@@ -118,7 +118,7 @@ class SecondViewController: UIViewController , CLLocationManagerDelegate , UIPic
                     + ", \"longitude\": "
                     + "\(longitude)"
                     + ", \"phase\": "
-                    + "1"
+                    + "0"
                     + ", \"rice_type\": "
                     + "\(RiceType)"
                     + ", \"done_date\": \""
