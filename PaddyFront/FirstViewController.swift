@@ -8,10 +8,19 @@
 
 import UIKit
 import Foundation
+import CoreLocation
+import MapKit
 
-class FirstViewController: UIViewController , GMSMapViewDelegate {
+class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationManagerDelegate {
 
     var gmaps : GMSMapView!
+
+    // 現在地の位置情報の取得にはCLLocationManagerを使用
+    var lm: CLLocationManager! = nil
+    // 取得した緯度を保持するインスタンス
+    var latitude: CLLocationDegrees!
+    // 取得した経度を保持するインスタンス
+    var longitude: CLLocationDegrees!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -27,16 +36,37 @@ class FirstViewController: UIViewController , GMSMapViewDelegate {
         gmaps.mapType = kGMSTypeHybrid;
         self.view.addSubview(gmaps)
         
-        // Buttonを作成する.
-        let myButton: UIButton = UIButton(frame: CGRectMake(0, 0, 80, 50))
-        myButton.layer.position = CGPointMake(self.view.frame.width/2, self.view.frame.height-100)
-        myButton.layer.masksToBounds = true
-        myButton.layer.cornerRadius = 20.0
-        myButton.setTitle("更新", forState: .Normal)
-        myButton.backgroundColor = UIColor.redColor()
-        myButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
-        myButton.addTarget(self, action: "touchUpdateButton:", forControlEvents: .TouchUpInside)
-        self.view.addSubview(myButton)
+        // GPS初期化
+        lm = CLLocationManager()
+        lm.delegate = self
+        //位置情報取得の可否。バックグラウンドで実行中の場合にもアプリが位置情報を利用することを許可する
+        lm.requestAlwaysAuthorization()
+        //位置情報の精度
+        lm.desiredAccuracy = kCLLocationAccuracyBest
+        //位置情報取得間隔(m)
+        lm.distanceFilter = 20
+        
+        // 更新 Buttonを作成する.
+        let updateButton: UIButton = UIButton(frame: CGRectMake(0, 0, 80, 50))
+        updateButton.layer.position = CGPointMake(self.view.frame.width/3, self.view.frame.height-100)
+        updateButton.layer.masksToBounds = true
+        updateButton.layer.cornerRadius = 20.0
+        updateButton.setTitle("更新", forState: .Normal)
+        updateButton.backgroundColor = UIColor.redColor()
+        updateButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        updateButton.addTarget(self, action: "touchUpdateButton:", forControlEvents: .TouchUpInside)
+        self.view.addSubview(updateButton)
+
+        // 現在位置表示 Buttonを作成する.
+        let positionButton: UIButton = UIButton(frame: CGRectMake(0, 0, 80, 50))
+        positionButton.layer.position = CGPointMake(self.view.frame.width/3 * 2, self.view.frame.height-100)
+        positionButton.layer.masksToBounds = true
+        positionButton.layer.cornerRadius = 20.0
+        positionButton.setTitle("現在位置", forState: .Normal)
+        positionButton.backgroundColor = UIColor.redColor()
+        positionButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        positionButton.addTarget(self, action: "touchPositionButton:", forControlEvents: .TouchUpInside)
+        self.view.addSubview(positionButton)
     }
     
     func touchUpdateButton(sender: UIButton) {
@@ -61,13 +91,22 @@ class FirstViewController: UIViewController , GMSMapViewDelegate {
             // 品種
             jsonbuf = json[i]["rice_type"]
             let riceType = "\(jsonbuf)"
+            var riceTypeStr: String = "選択なし"
+            
+            var j = 0
+            for ( j = 0 ; j < riceTypeTbl.count ; j++ ) {
+                if ( riceType == riceTypeTbl[j][0] ){
+                    riceTypeStr = riceTypeTbl[j][1]
+                }
+            }
+                let ooo = riceTypeTbl.count
             // フェーズ
             jsonbuf = json[i]["phase"]
             let phase = "\(jsonbuf)"
             
             // マーカー設定
             let marker: GMSMarker = GMSMarker ()
-            marker.snippet = daneDate
+            marker.snippet = daneDate + " : " + riceTypeStr
             if ( phase == "0") {
                 marker.icon = UIImage(named: "nae35.png")
             }
@@ -82,7 +121,28 @@ class FirstViewController: UIViewController , GMSMapViewDelegate {
         }
 
     }
-
+    
+    func touchPositionButton(sender: UIButton) {
+        //現在地取得
+        lm.startUpdatingLocation()
+    }
+    
+    /** 位置情報取得成功時 */
+    func locationManager(manager: CLLocationManager!, didUpdateToLocation newLocation: CLLocation!, fromLocation oldLocation: CLLocation!){
+        /* 現在位置 */
+        var coordinate: CLLocationCoordinate2D = CLLocationCoordinate2D(latitude:newLocation.coordinate.latitude,longitude:newLocation.coordinate.longitude)
+        gmaps.animateToLocation( CLLocationCoordinate2DMake(newLocation.coordinate.latitude, newLocation.coordinate.longitude) )
+        /* ズーム */
+        gmaps.animateToZoom(16);
+        // GPSの使用を停止する．停止しない限りGPSは実行され，指定間隔で更新され続ける．
+        lm.stopUpdatingLocation()
+    }
+    
+    /** 位置情報取得失敗時 */
+    func locationManager(manager: CLLocationManager!, didFailWithError error: NSError!) {
+        // なんか表示する
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.

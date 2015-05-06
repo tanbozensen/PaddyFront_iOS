@@ -28,13 +28,17 @@ class SecondViewController: UIViewController , CLLocationManagerDelegate , UIPic
     @IBOutlet weak var datePicker: UIDatePicker!
     
     @IBOutlet weak var riceTypePicker: UIPickerView!
-    let array = ["選択なし","コシヒカリ", "ヒノヒカリ", "ひとめぼれ", "あきたこまち", "キヌヒカリ" , "はえぬき" , "きらら３９７" , "つがるロマン" , "ななつぼし" , "ササニシキ" , "その他" ]
     
+    var array = [String]()
+
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
         // riceTypePicker 設定
+        for ( var i = 0 ; i < riceTypeTbl.count ; i++ ) {
+            array += [ riceTypeTbl[i][1] ]
+        }
         // Delegateを設定する.
         riceTypePicker.delegate = self
         // Viewに追加する.
@@ -56,7 +60,7 @@ class SecondViewController: UIViewController , CLLocationManagerDelegate , UIPic
         //位置情報の精度
         lm.desiredAccuracy = kCLLocationAccuracyBest
         //位置情報取得間隔(m)
-        lm.distanceFilter = 300
+        lm.distanceFilter = 20
     
     }
 
