@@ -22,6 +22,12 @@ class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationMan
     // 取得した経度を保持するインスタンス
     var longitude: CLLocationDegrees!
     
+    // 現在地マーカー
+    var currentMarker: GMSMarker = GMSMarker ()
+    
+    // マップ切り替えボタン
+    let mapChangeButton: UIButton = UIButton(frame: CGRectMake(0, 0, 80, 50))
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
@@ -33,7 +39,7 @@ class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationMan
         let camera: GMSCameraPosition = GMSCameraPosition.cameraWithLatitude(lat,longitude: lon,zoom: zoom);
         gmaps = GMSMapView(frame: CGRectMake(0, 0, self.view.bounds.width, self.view.bounds.height))
         gmaps.camera = camera
-        gmaps.mapType = kGMSTypeHybrid;
+        gmaps.mapType = kGMSTypeNormal;
         self.view.addSubview(gmaps)
         
         // GPS初期化
@@ -48,25 +54,36 @@ class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationMan
         
         // 更新 Buttonを作成する.
         let updateButton: UIButton = UIButton(frame: CGRectMake(0, 0, 80, 50))
-        updateButton.layer.position = CGPointMake(self.view.frame.width/3, self.view.frame.height-100)
+        updateButton.layer.position = CGPointMake(self.view.frame.width/4, self.view.frame.height-100)
         updateButton.layer.masksToBounds = true
         updateButton.layer.cornerRadius = 20.0
         updateButton.setTitle("更新", forState: .Normal)
-        updateButton.backgroundColor = UIColor.redColor()
-        updateButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        updateButton.backgroundColor = UIColor.whiteColor()
+        updateButton.setTitleColor(UIColor.blueColor(), forState: .Normal)
         updateButton.addTarget(self, action: "touchUpdateButton:", forControlEvents: .TouchUpInside)
         self.view.addSubview(updateButton)
 
         // 現在位置表示 Buttonを作成する.
         let positionButton: UIButton = UIButton(frame: CGRectMake(0, 0, 80, 50))
-        positionButton.layer.position = CGPointMake(self.view.frame.width/3 * 2, self.view.frame.height-100)
+        positionButton.layer.position = CGPointMake(self.view.frame.width/4 * 2, self.view.frame.height-100)
         positionButton.layer.masksToBounds = true
         positionButton.layer.cornerRadius = 20.0
         positionButton.setTitle("現在位置", forState: .Normal)
-        positionButton.backgroundColor = UIColor.redColor()
-        positionButton.setTitleColor(UIColor.whiteColor(), forState: .Normal)
+        positionButton.backgroundColor = UIColor.whiteColor()
+        positionButton.setTitleColor(UIColor.blueColor(), forState: .Normal)
         positionButton.addTarget(self, action: "touchPositionButton:", forControlEvents: .TouchUpInside)
         self.view.addSubview(positionButton)
+        
+        // map切り替え Buttonを作成する.
+        mapChangeButton.layer.position = CGPointMake(self.view.frame.width/4 * 3, self.view.frame.height-100)
+        mapChangeButton.layer.masksToBounds = true
+        mapChangeButton.layer.cornerRadius = 20.0
+        mapChangeButton.setTitle("衛生写真", forState: .Normal)
+        mapChangeButton.backgroundColor = UIColor.whiteColor()
+        mapChangeButton.setTitleColor(UIColor.blueColor(), forState: .Normal)
+        mapChangeButton.addTarget(self, action: "touchMapChangeButton:", forControlEvents: .TouchUpInside)
+        self.view.addSubview(mapChangeButton)
+    
     }
     
     func touchUpdateButton(sender: UIButton) {
@@ -134,8 +151,19 @@ class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationMan
         gmaps.animateToLocation( CLLocationCoordinate2DMake(newLocation.coordinate.latitude, newLocation.coordinate.longitude) )
         /* ズーム */
         gmaps.animateToZoom(16);
+        
+        // 現在地マーカー設定
+        currentMarker.map = nil
+        currentMarker.snippet = "現在地"
+        currentMarker.appearAnimation = kGMSMarkerAnimationPop;
+        currentMarker.position = CLLocationCoordinate2DMake(newLocation.coordinate.latitude, newLocation.coordinate.longitude)
+        // マーカーをマップへ表示
+        currentMarker.map = gmaps;
+        
         // GPSの使用を停止する．停止しない限りGPSは実行され，指定間隔で更新され続ける．
         lm.stopUpdatingLocation()
+        
+        
     }
     
     /** 位置情報取得失敗時 */
@@ -143,10 +171,23 @@ class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationMan
         // なんか表示する
     }
     
+    func touchMapChangeButton(sender: UIButton) {
+        if ( mapChangeButton.titleLabel?.text == "衛生写真" ) {
+            mapChangeButton.setTitle("地図", forState: .Normal)
+            gmaps.mapType = kGMSTypeHybrid
+        }
+        else {
+            mapChangeButton.setTitle("衛生写真", forState: .Normal)
+            gmaps.mapType = kGMSTypeNormal
+        }
+    }
+    
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+    
+    
 
 
 }
