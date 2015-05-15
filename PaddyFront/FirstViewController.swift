@@ -32,6 +32,10 @@ class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationMan
         super.viewDidLoad()
         // Do any additional setup after loading the view, typically from a nib.
         
+        // タブボタンカラー設定
+        let colorKey = UIColor(red: 0/255, green: 137/255, blue: 80/255, alpha: 1.0)
+        UITabBar.appearance().tintColor = colorKey
+        
         // GoogleMap 初期設定
         let lat: CLLocationDegrees = 36.3162
         let lon: CLLocationDegrees = 137.8652
@@ -54,7 +58,7 @@ class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationMan
         
         // 更新 Buttonを作成する.
         let updateButton: UIButton = UIButton(frame: CGRectMake(0, 0, 80, 50))
-        updateButton.layer.position = CGPointMake(self.view.frame.width/4, self.view.frame.height-100)
+        updateButton.layer.position = CGPointMake(self.view.frame.width/6, 50)
         updateButton.layer.masksToBounds = true
         updateButton.layer.cornerRadius = 20.0
         updateButton.setTitle("更新", forState: .Normal)
@@ -65,7 +69,7 @@ class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationMan
 
         // 現在位置表示 Buttonを作成する.
         let positionButton: UIButton = UIButton(frame: CGRectMake(0, 0, 80, 50))
-        positionButton.layer.position = CGPointMake(self.view.frame.width/4 * 2, self.view.frame.height-100)
+        positionButton.layer.position = CGPointMake(self.view.frame.width/6 * 3, 50)
         positionButton.layer.masksToBounds = true
         positionButton.layer.cornerRadius = 20.0
         positionButton.setTitle("現在位置", forState: .Normal)
@@ -75,7 +79,7 @@ class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationMan
         self.view.addSubview(positionButton)
         
         // map切り替え Buttonを作成する.
-        mapChangeButton.layer.position = CGPointMake(self.view.frame.width/4 * 3, self.view.frame.height-100)
+        mapChangeButton.layer.position = CGPointMake(self.view.frame.width/6 * 5, 50)
         mapChangeButton.layer.masksToBounds = true
         mapChangeButton.layer.cornerRadius = 20.0
         mapChangeButton.setTitle("衛生写真", forState: .Normal)
@@ -108,27 +112,40 @@ class FirstViewController: UIViewController , GMSMapViewDelegate , CLLocationMan
             // 品種
             jsonbuf = json[i]["rice_type"]
             let riceType = "\(jsonbuf)"
-            var riceTypeStr: String = "選択なし"
-            
+            var riceTypeStr: String = ""
             var j = 0
-            for ( j = 0 ; j < riceTypeTbl.count ; j++ ) {
+            for ( j = 1 ; j < riceTypeTbl.count ; j++ ) {   // 選択なし飛ばす
                 if ( riceType == riceTypeTbl[j][0] ){
                     riceTypeStr = riceTypeTbl[j][1]
                 }
             }
-                let ooo = riceTypeTbl.count
+            // 耕作面積
+            var areaUnderTillage = ""
+            if ( json[i]["area_under_tillage"].isError ) {
+            }
+            else {
+                jsonbuf = json[i]["area_under_tillage"]
+                areaUnderTillage = "\(jsonbuf)"
+            }
             // フェーズ
             jsonbuf = json[i]["phase"]
             let phase = "\(jsonbuf)"
             
             // マーカー設定
+            var snippetStr = daneDate
+            if ( riceTypeStr != "") {
+                snippetStr += "\n" + "品種 : " + riceTypeStr
+            }
+            if ( areaUnderTillage != "") {
+                snippetStr += "\n" + "耕作面積 : " + areaUnderTillage + "ha"
+            }
             let marker: GMSMarker = GMSMarker ()
-            marker.snippet = daneDate + " : " + riceTypeStr
+            marker.snippet = snippetStr
             if ( phase == "0") {
-                marker.icon = UIImage(named: "nae35.png")
+                marker.icon = UIImage(named: "nae40.png")
             }
             else{
-                marker.icon = UIImage(named: "ine35.png")
+                marker.icon = UIImage(named: "tawara30.png")
             }
             marker.appearAnimation = kGMSMarkerAnimationPop;
             marker.position = CLLocationCoordinate2DMake(markerLat, markerLon)

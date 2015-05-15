@@ -126,8 +126,10 @@ class SecondViewController: UIViewController , CLLocationManagerDelegate , UIPic
                     + ", \"rice_type\": "
                     + "\(RiceType)"
                     + ", \"done_date\": \""
-                    + "\(date)"
-                    + "\" }"
+                    + "\(date)\""
+                    + ", \"area_under_tillage\": "
+                    + "100"
+                    + "}"
 
         requestTextView.text = "\(requestStr)"
 
@@ -153,6 +155,35 @@ class SecondViewController: UIViewController , CLLocationManagerDelegate , UIPic
         myTask.resume()
     }
     
+
+    @IBAction func TouchDelBtn(sender: AnyObject) {
+        // リクエストデータ生成
+        var requestStr:NSString
+        
+        requestStr = "{}"
+        requestTextView.text = "\(requestStr)"
+        
+        // DELETE
+        // 通信用のConfigを生成.
+        let myConfig:NSURLSessionConfiguration = NSURLSessionConfiguration.backgroundSessionConfigurationWithIdentifier("backgroundTask")
+        // Sessionを生成.
+        var mySession:NSURLSession = NSURLSession(configuration: myConfig, delegate: self, delegateQueue: nil)
+        // 通信先のURLを生成.
+        let myUrl:NSURL = NSURL(string: "http://tanbozensen.herokuapp.com/api/tanbos/105")!
+        // POST用のリクエストを生成.
+        let myRequest:NSMutableURLRequest = NSMutableURLRequest(URL: myUrl)
+        // DELETEのメソッドを指定.
+        myRequest.HTTPMethod = "DELETE"
+        // Httpヘッダのcontenttypeはapplication/jsonに
+        myRequest.addValue("application/json", forHTTPHeaderField: "Content-Type")
+        // リクエストにセット.
+        let myData:NSData = requestStr.dataUsingEncoding(NSUTF8StringEncoding)!
+        myRequest.HTTPBody = myData
+        // タスクの生成.
+        let myTask:NSURLSessionDataTask = mySession.dataTaskWithRequest(myRequest)
+        // タスクの実行.
+        myTask.resume()
+    }
     
     /*
     通信が終了したときに呼び出されるデリゲート.
